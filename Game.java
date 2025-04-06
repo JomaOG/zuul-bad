@@ -1,3 +1,5 @@
+import java.util.Stack;
+
 /**
  *  This class is the main class of the "World of Zuul" application. 
  *  "World of Zuul" is a very simple, text based adventure game.  Users 
@@ -19,12 +21,14 @@ public class Game
 {
     private Parser parser;
     private Room currentRoom;
+    private Stack<Room> previousRoom;
         
     /**
      * Create the game and initialise its internal map.
      */
     public Game() 
     {
+        previousRoom = new Stack<Room>();
         createRooms();
         parser = new Parser();
     }
@@ -48,15 +52,37 @@ public class Game
         outside.setExits("east", theater);
         outside.setExits("west", lab);
         outside.setExits("south", pub);
+        // outside Items
+        outside.addItem("bottle", "wotoh", 2);
+        outside.addItem("can", "It's empty", 2);
+        outside.addItem("paper", "Blank paper", 3);
+        
         // theater
         theater.setExits("west", outside);
+        // theater Items
+        theater.addItem("curtain", "piece of the curtain", 5);
+        
         // pub
         pub.setExits("east", outside);
+        // pub Items
+        pub.addItem("beer", "It's empty", 2);
+        pub.addItem("billiard", "I do not have time for this", 15);
+        pub.addItem("darts", "I do not have time for this", 4);
+        
         // lab
         lab.setExits("north", outside);
         lab.setExits("east", office);
+        // lab Items
+        lab.addItem("coats", "The ones scientist wear", 1);
+        lab.addItem("tubes", "It's empty", 1);
+        lab.addItem("stove", "It's inside a locked cabinet", 4);
+        lab.addItem("gloves", "medical grade gloves", 1);
+        
         // office
         office.setExits("west", lab);
+        // office Items
+        office.addItem("word", "This is part of Office", 0);
+        office.addItem("sheets", "This is part of Office", 0);
 
         currentRoom = outside;  // start game outside
     }
@@ -123,11 +149,11 @@ public class Game
         else if (commandWord.equals("look")) {
             System.out.println(currentRoom.getLongDescription());
         }
-        
-
+        else if (commandWord.equals("back")) {
+            back();
+        }
         return wantToQuit;
     }
-
     // implementations of user commands:
 
     /**
@@ -165,9 +191,22 @@ public class Game
             System.out.println("There is no door!");
         }
         else {
+            previousRoom.push(currentRoom);
             currentRoom = nextRoom;
             printLocationInfo();
         }
+    }
+    
+    private void back() {
+        // Check if stack is empty
+        if(previousRoom.empty()) {
+            System.out.println("You are at the beginning!");
+            return;
+        }
+        
+        // Move back too previous room
+        currentRoom = previousRoom.pop();
+        printLocationInfo();
     }
 
     /** 
