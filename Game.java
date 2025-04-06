@@ -44,11 +44,19 @@ public class Game
         office = new Room("in the computing admin office");
         
         // initialise room exits
-        outside.setExits(null, theater, lab, pub);
-        theater.setExits(null, null, null, outside);
-        pub.setExits(null, outside, null, null);
-        lab.setExits(outside, office, null, null);
-        office.setExits(null, null, null, lab);
+        // outside
+        outside.setExits("east", theater);
+        outside.setExits("west", lab);
+        outside.setExits("south", pub);
+        // theater
+        theater.setExits("west", outside);
+        // pub
+        pub.setExits("east", outside);
+        // lab
+        lab.setExits("north", outside);
+        lab.setExits("east", office);
+        // office
+        office.setExits("west", lab);
 
         currentRoom = outside;  // start game outside
     }
@@ -84,8 +92,8 @@ public class Game
         printLocationInfo();
     }
 
-    private void printLocationInfo(){        
-        System.out.println(currentRoom.getExitString());
+    private void printLocationInfo(){
+        System.out.println(currentRoom.getLongDescription());
     }
     
     /**
@@ -112,6 +120,10 @@ public class Game
         else if (commandWord.equals("quit")) {
             wantToQuit = quit(command);
         }
+        else if (commandWord.equals("look")) {
+            System.out.println(currentRoom.getLongDescription());
+        }
+        
 
         return wantToQuit;
     }
@@ -129,7 +141,7 @@ public class Game
         System.out.println("around at the university.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   go quit help");
+        System.out.println(parser.showAllCommands());
     }
 
     /** 
