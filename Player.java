@@ -8,9 +8,6 @@ import java.util.HashMap;
  */
 public class Player
 {
-    // instance variables - replace the example below with your own
-    // private String name;
-    // private String description;
     private Room currentRoom;
     private int weight;
     private int maxWeight = 50;
@@ -26,10 +23,16 @@ public class Player
         this.currentRoom = currentRoom;
     }
     
+    /**
+     * return item name in inventory
+     */
     public Item getItem(String name) {
         return items.get(name);
     }
     
+    /**
+     * check player inventory weight
+     */
     public int checkWeight() {
         int weight = 0;
         for(String item : items.keySet()) {
@@ -38,34 +41,43 @@ public class Player
         return weight;
     }
     
+    /**
+     * pick up command
+     */
     public void pickUpItem(Command command) {
         String item = command.getSecondWord();
         Room room = currentRoom.getRoom();
-        int checkWeight = checkWeight() + room.getItem(item).getWeight();
         
         if(!command.hasSecondWord()) {
-            //
+            //If no secondWord
             System.out.println("Which item?");
             return;
-        } else if (this.maxWeight <= checkWeight) {
-            //
+        }
+        
+        //Calculates current weight + targetItem weight
+        int checkWeight = checkWeight() + room.getItem(item).getWeight();
+        if (this.maxWeight <= checkWeight) {
+            // prints if weight would be above maxWeight
             System.out.printf("Item [%s] is too heavy to pick up.\n", command.getSecondWord());
             return;
         }
         
         if(room.getItem(item)!=null) {
             items.put(item,room.getItem(item));
-            System.out.printf("you picked up: %s\n", room.getItem(item).getName());
-            System.out.printf("%d / %d weight\n", checkWeight(), this.maxWeight);
+            System.out.printf("You picked up: [%s]\n", room.getItem(item).getName());
+            System.out.printf("Current weight: %d / %d.\n", checkWeight(), this.maxWeight);
             room.removeItem(item);
         } else {
             System.out.printf("Item [%s] does not exist.\n", item);
             }
     }
     
+    /**
+     * drop command
+     */
     public void dropItem(Command command) {
         if(!command.hasSecondWord()) {
-            //
+            //If no secondWord
             System.out.println("Which item?");
             return;
         }
@@ -75,50 +87,58 @@ public class Player
         if(items.containsKey(item)) {
             Room room = currentRoom.getRoom();
             room.addItem(item, items.get(item).getDescription(), items.get(item).getWeight());
-            System.out.printf("You dropped: %s\n", items.get(item).getName());
+            System.out.printf("You dropped: [%s]\n", items.get(item).getName());
             items.remove(item);
+            System.out.printf("Current weight: %d / %d.\n", checkWeight(), this.maxWeight);
         } else {
             System.out.printf("Item [%s] does not exist.\n", item);
         }
     }
     
+    /**
+     * eat command
+     */
     public void eat(Command command) {
         String item = command.getSecondWord();
         if(!command.hasSecondWord()) {
-            //
+            //If no secondWord
             System.out.println("Eat what?");
             return;
         } else if (item.equals("cookie") && items.containsKey(item)){
-            //
+            //Checks if targetItem is Cookie and is in inventory
             items.remove(item);
             setMaxWeight(50);
-            System.out.printf("You ate the magic cookie, and you max carry weight has increased to %d", this.maxWeight);
+            System.out.printf("You ate the magic cookie, and you max carry weight has increased to %d\n", this.maxWeight);
         } else {
-            //
+            //Prints if player tries to eat something else than the cookie
             System.out.println("You can only eat the magic cookie");
         }
     }
 
+    /**
+     * Set max Weight 
+     * use when eating cookie
+     */
     public void setMaxWeight(int weightIncrease) {
         this.maxWeight += weightIncrease;
     }
     
     /**
-     * An example of a method - replace this comment with your own
-     *
-     * @param  y  a sample parameter for a method
-     * @return    the sum of x and y
+     * Return String with all items in player inventory
      */
     public String getItemString()
     {
         // put your code here
         String itemString = "Player Items: | ";
         for(String item : items.keySet()) {
-            itemString += item +" " +items.get(item).getWeight() +"wt | ";
+            itemString += "[" +item +"] - " +items.get(item).getWeight() +" wt | ";
         }
         return itemString;
     }
     
+    /**
+     * places player in current room.
+     */
     public void setRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
     }

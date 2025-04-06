@@ -50,21 +50,21 @@ public class Game
         
         // initialise room exits
         // outside
-        outside.setExits("east", theater);
-        outside.setExits("west", lab);
-        outside.setExits("south", pub);
+        outside.setExits(Direction.EAST.toString(), theater);
+        outside.setExits(Direction.SOUTH.toString(), lab);
+        outside.setExits(Direction.WEST.toString(), pub);
         // outside Items
         outside.addItem("bottle", "wotoh", 25);
         outside.addItem("can", "It's empty", 26);
         outside.addItem("paper", "Blank paper", 3);
         
         // theater
-        theater.setExits("west", outside);
+        theater.setExits(Direction.WEST.toString(), outside);
         // theater Items
         theater.addItem("curtain", "piece of the curtain", 5);
         
         // pub
-        pub.setExits("east", outside);
+        pub.setExits(Direction.EAST.toString(), outside);
         // pub Items
         pub.addItem("beer", "It's empty", 2);
         pub.addItem("billiard", "I do not have time for this", 15);
@@ -72,8 +72,8 @@ public class Game
         pub.addItem("cookie", "eat this to double carry weight", 1);
         
         // lab
-        lab.setExits("north", outside);
-        lab.setExits("east", office);
+        lab.setExits(Direction.NORTH.toString(), outside);
+        lab.setExits(Direction.EAST.toString(), office);
         // lab Items
         lab.addItem("coats", "The ones scientist wear", 1);
         lab.addItem("tubes", "It's empty", 1);
@@ -81,7 +81,7 @@ public class Game
         lab.addItem("gloves", "medical grade gloves", 1);
         
         // office
-        office.setExits("west", lab);
+        office.setExits(Direction.WEST.toString(), lab);
         // office Items
         office.addItem("word", "This is part of Office", 1);
         office.addItem("sheets", "This is part of Office", 1);
@@ -116,11 +116,14 @@ public class Game
         System.out.println();
         System.out.println("Welcome to the World of Zuul!");
         System.out.println("World of Zuul is a new, incredibly boring adventure game.");
-        System.out.println("Type 'help' if you need help.");
+        System.out.println("Type " +CommandWord.HELP +" if you need help.");
         System.out.println();
         printLocationInfo();
     }
 
+    /**
+     * print location info
+     */
     private void printLocationInfo(){
         System.out.println(currentRoom.getLongDescription());
     }
@@ -133,39 +136,41 @@ public class Game
     private boolean processCommand(Command command) 
     {
         boolean wantToQuit = false;
-
-        if(command.isUnknown()) {
-            System.out.println("I don't know what you mean...");
-            return false;
-        }
-
-        String commandWord = command.getCommandWord();
-        if (commandWord.equals("help")) {
-            printHelp();
-        }
-        else if (commandWord.equals("go")) {
-            goRoom(command);
-        }
-        else if (commandWord.equals("quit")) {
-            wantToQuit = quit(command);
-        }
-        else if (commandWord.equals("look")) {
-            System.out.println(currentRoom.getLongDescription());
-        }
-        else if (commandWord.equals("back")) {
-            back();
-        }
-        else if (commandWord.equals("take")) {
-            player.pickUpItem(command);
-        }
-        else if (commandWord.equals("drop")) {
-            player.dropItem(command);
-        }
-        else if (commandWord.equals("check")) {
-            System.out.println(player.getItemString());
-        }
-        else if (commandWord.equals("eat")) {
-            player.eat(command);
+        
+        CommandWord commandWord = command.getCommandWord();
+        switch(commandWord) {
+            case UNKNOWN:
+                System.out.println("I don't know what you mean...");
+                break;
+            case HELP:
+                printHelp();
+                break;
+            case GO:
+                goRoom(command);
+                break;
+            case QUIT:
+                wantToQuit = quit(command);
+                break;
+            case LOOK: // Prints Exits, and Items in current room
+                System.out.println(currentRoom.getLongDescription());
+                break;
+            case BACK: // Return to previous rom
+                back();
+                break;
+            case TAKE: // Pick up item from current room into player inventory
+                player.pickUpItem(command);
+                break;
+            case DROP: // Drop item from player inventory into current room
+                player.dropItem(command);
+                break;
+            case CHECK: // Prints player inventory
+                System.out.println(player.getItemString());
+                break;
+            case EAT:   // Eat Item (only works for cookie)
+                player.eat(command);
+                break;
+            default:
+                break;
         }
         return wantToQuit;
     }
@@ -206,13 +211,18 @@ public class Game
             System.out.println("There is no door!");
         }
         else {
+            //Place room into Stack
             previousRoom.push(currentRoom);
             currentRoom = nextRoom;
+            //Move player into currentRoom/nextRoom
             player.setRoom(currentRoom);
             printLocationInfo();
         }
     }
     
+    /**
+     * Returning to previous room using Stack<>
+     */
     private void back() {
         // Check if stack is empty
         if(previousRoom.empty()) {
@@ -220,8 +230,9 @@ public class Game
             return;
         }
         
-        // Move back too previous room
+        // Move back to previous room
         currentRoom = previousRoom.pop();
+        // Move play back to previous room
         player.setRoom(currentRoom);
         printLocationInfo();
     }

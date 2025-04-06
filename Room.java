@@ -53,7 +53,7 @@ public class Room
     public String getItemString() {
         String itemString = "Items: | ";
         for(String item : items.keySet()){
-            itemString += item + " | ";
+            itemString += "[" +item +"] - " +items.get(item).getWeight() +" wt | ";
         }
         return itemString;
     }
@@ -69,7 +69,7 @@ public class Room
     public String getExitString() {
         String exitString = "Exits: | ";
         for(String direction : exits.keySet()) {
-            exitString += direction + " | ";
+            exitString += direction.toString() + " | ";
         }
         return exitString;
     }

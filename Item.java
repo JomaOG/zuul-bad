@@ -23,14 +23,23 @@ public class Item
         this.weight = weight;
     }
     
+    /**
+     * Return item name
+     */
     public String getName() {
         return name;
     }
-
+    
+    /**
+     * return item description
+     */
     public String getDescription() {
         return description;
     }
     
+    /**
+     * return item weight
+     */
     public int getWeight() {
         return weight;
     }

@@ -55,14 +55,12 @@ public class Parser
 
         // Now check whether this word is known. If so, create a command
         // with it. If not, create a "null" command (for unknown command).
-        if(commands.isCommand(word1)) {
-            return new Command(word1, word2);
-        }
-        else {
-            return new Command(null, word2); 
-        }
+        return new Command(commands.getCommandWord(word1), word2);
     }
     
+    /**
+     * return all commands in type string
+     */
     public String showAllCommands() {
         return commands.showAll();
     }
