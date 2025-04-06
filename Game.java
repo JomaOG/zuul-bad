@@ -22,6 +22,7 @@ public class Game
     private Parser parser;
     private Room currentRoom;
     private Stack<Room> previousRoom;
+    private Player player;
         
     /**
      * Create the game and initialise its internal map.
@@ -53,8 +54,8 @@ public class Game
         outside.setExits("west", lab);
         outside.setExits("south", pub);
         // outside Items
-        outside.addItem("bottle", "wotoh", 2);
-        outside.addItem("can", "It's empty", 2);
+        outside.addItem("bottle", "wotoh", 25);
+        outside.addItem("can", "It's empty", 26);
         outside.addItem("paper", "Blank paper", 3);
         
         // theater
@@ -68,6 +69,7 @@ public class Game
         pub.addItem("beer", "It's empty", 2);
         pub.addItem("billiard", "I do not have time for this", 15);
         pub.addItem("darts", "I do not have time for this", 4);
+        pub.addItem("cookie", "eat this to double carry weight", 1);
         
         // lab
         lab.setExits("north", outside);
@@ -81,10 +83,11 @@ public class Game
         // office
         office.setExits("west", lab);
         // office Items
-        office.addItem("word", "This is part of Office", 0);
-        office.addItem("sheets", "This is part of Office", 0);
+        office.addItem("word", "This is part of Office", 1);
+        office.addItem("sheets", "This is part of Office", 1);
 
         currentRoom = outside;  // start game outside
+        player = new Player(currentRoom);
     }
 
     /**
@@ -152,6 +155,18 @@ public class Game
         else if (commandWord.equals("back")) {
             back();
         }
+        else if (commandWord.equals("take")) {
+            player.pickUpItem(command);
+        }
+        else if (commandWord.equals("drop")) {
+            player.dropItem(command);
+        }
+        else if (commandWord.equals("check")) {
+            System.out.println(player.getItemString());
+        }
+        else if (commandWord.equals("eat")) {
+            player.eat(command);
+        }
         return wantToQuit;
     }
     // implementations of user commands:
@@ -193,6 +208,7 @@ public class Game
         else {
             previousRoom.push(currentRoom);
             currentRoom = nextRoom;
+            player.setRoom(currentRoom);
             printLocationInfo();
         }
     }
@@ -206,6 +222,7 @@ public class Game
         
         // Move back too previous room
         currentRoom = previousRoom.pop();
+        player.setRoom(currentRoom);
         printLocationInfo();
     }
 

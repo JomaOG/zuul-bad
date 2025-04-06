@@ -34,8 +34,20 @@ public class Room
         items = new HashMap<String,Item>();
     }
     
+    public Room getRoom() {
+        return this;
+    }
+    
     public void addItem(String name, String description, int weight) {
         items.put(name,new Item(name,description,weight));
+    }
+    
+    public Item getItem(String name) {
+        return items.get(name);
+    }
+    
+    public void removeItem(String name) {
+        items.remove(name);
     }
     
     public String getItemString() {
